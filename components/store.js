@@ -164,7 +164,7 @@ export function StoreProvider({ children }) {
               return logBatch(next, "ai-flagged", clientItem(s, id, { detail: flags[0].flag, status: "Sent back to client" }));
             }
             let next = patchClient(s, id, { status: "ai_verified", daysWaiting: 0 });
-            next = appendChat(next, id, { from: "ai", text: `AI document check passed — ${checks.length} of ${checks.length} checks. Status set to AI-verified · ready for review.` });
+            next = appendChat(next, id, { from: "ai", text: `AI document check passed — ${checks.length} of ${checks.length} checks. Status set to AI verified — ready for human review.` });
             return logBatch(next, "ai-passed", clientItem(s, id, { detail: `${detailFrom(s, id).checklist.length} documents verified`, status: "Passed" }));
           });
         }, AI_CHECK_MS);
@@ -175,7 +175,7 @@ export function StoreProvider({ children }) {
           const resolved = { ...s.chase.resolved };
           for (const f of openFlagsFor(id, s.chase.resolved)) resolved[f.id] = Date.now();
           let next = patchClient({ ...s, chase: { ...s.chase, resolved } }, id, { status: "ai_verified" });
-          next = appendChat(next, id, { from: "system", text: "AI flag overridden by Jasmin — moved to AI-verified · ready for review" });
+          next = appendChat(next, id, { from: "system", text: "AI flag overridden by Jasmin — moved to AI verified — ready for human review" });
           return logBatch(next, "override", clientItem(s, id, { detail: "AI flag overridden", status: "Sent to review" }));
         });
       },

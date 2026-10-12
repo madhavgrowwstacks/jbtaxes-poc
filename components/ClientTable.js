@@ -14,7 +14,7 @@ export const PRESETS = [
   { key: "all", label: "All", test: () => true },
   { key: "mine", label: "Mine (Jasmin)", test: (c) => c.assignee === "Jasmin Baros" },
   { key: "jas", label: "For Review (Jas)", test: (c) => c.status === "review_jas" },
-  { key: "ready", label: "AI-verified · ready", test: (c) => c.status === "ai_verified" },
+  { key: "ready", label: "AI verified", test: (c) => c.status === "ai_verified" },
   { key: "flagged", label: "AI flagged", test: (c) => c.status === "ai_flagged" },
   { key: "waiting", label: "Waiting on client", test: (c) => groupOf(c) === "waiting" },
   { key: "risk", label: "At risk", test: isAtRisk },
@@ -185,7 +185,7 @@ export default function ClientTable({ pageSize = 10, filter: filterProp, onFilte
             <SortHeader label="Client" sortKey="name" sort={sort} onSort={onSort} />
             <SortHeader label="Return" sortKey="type" sort={sort} onSort={onSort} width={90} />
             <SortHeader label="Assignee" sortKey="assignee" sort={sort} onSort={onSort} width={190} />
-            <SortHeader label="Status" sortKey="status" sort={sort} onSort={onSort} width={280} />
+            <SortHeader label="Status" sortKey="status" sort={sort} onSort={onSort} width={250} />
             <SortHeader label="Waiting" sortKey="days" sort={sort} onSort={onSort} width={96} />
             <th style={{ width: 150 }}>{readOnly ? "Filed" : "Last nudge"}</th>
             <th style={{ width: 130 }}>
@@ -264,6 +264,7 @@ export default function ClientTable({ pageSize = 10, filter: filterProp, onFilte
               {readOnly ? (
                 <td>
                   <StatusBadge status={c.status} showSource />
+                  <div className="status-hint">{statusMeta(c.status).hint}</div>
                 </td>
               ) : (
               <td onClick={(e) => e.stopPropagation()}>
@@ -273,10 +274,12 @@ export default function ClientTable({ pageSize = 10, filter: filterProp, onFilte
                   value={c.status}
                   options={STATUS_OPTIONS}
                   onChange={(v) => changeStatus(c, v)}
-                  ariaLabel={`Status for ${c.name}`}
+                  ariaLabel={`Status for ${c.name}: ${statusMeta(c.status).label}. Click to change.`}
                   renderValue={(o) => <StatusBadge status={o.value} showSource />}
                   menuWidth={300}
+                  className="status-select"
                 />
+                <div className="status-hint">{statusMeta(c.status).hint}</div>
               </td>
               )}
               <td>

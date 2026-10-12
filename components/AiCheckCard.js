@@ -82,7 +82,7 @@ export default function AiCheckCard({ client }) {
             icon={UserCheck}
             onClick={() => {
               actions.overrideAiFlag(client.id);
-              toast({ title: "AI flag overridden", description: `${client.name} moved to AI-verified · ready for review.` });
+              toast({ title: "AI flag overridden", description: `${client.name} moved to AI verified — ready for human review.` });
             }}
           >
             Override — send to review

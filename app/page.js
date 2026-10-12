@@ -79,7 +79,7 @@ export default function Dashboard() {
     : [
         { key: "total", label: "Total returns", value: total.toLocaleString(), icon: FileText, tone: "info", filter: "all" },
         { key: "waiting", label: "Waiting on client", value: totals.waiting, icon: Clock, tone: "warning", filter: "waiting" },
-        { key: "ready_review", label: "AI-verified, ready", value: totals.ready_review, icon: Sparkles, tone: "violet", filter: "ready", source: "ai" },
+        { key: "ready_review", label: "AI verified, ready", value: totals.ready_review, icon: Sparkles, tone: "violet", filter: "ready", source: "ai" },
         { key: "review", label: "In human review", value: totals.review, icon: Eye, tone: "info", filter: "group:review" },
         { key: "rejected", label: "Rejected", value: totals.rejected, icon: AlertTriangle, tone: "danger", filter: "rejected" },
         { key: "filed", label: "Filed", value: totals.filed, icon: CheckCircle2, tone: "success", filter: "group:filed" },
@@ -172,16 +172,17 @@ export default function Dashboard() {
                     <span className="activity-text">
                       <b>{a.actor}</b> {a.text}
                     </span>
-                    <span className="activity-time">
-                      {fmtWhen(a.time)} <SourceTag source={a.source} compact />
+                    <span className="activity-meta">
+                      <span className="activity-time">{fmtWhen(a.time)}</span>
+                      <SourceTag source={a.source} compact />
+                      {count > 0 && (
+                        <span className="activity-more">
+                          {count > 1 ? `View all ${count.toLocaleString()}` : "View"}
+                          <ChevronRight size={14} aria-hidden />
+                        </span>
+                      )}
                     </span>
                   </span>
-                  {count > 0 && (
-                    <span className="activity-more">
-                      View {count > 1 ? `all ${count.toLocaleString()}` : ""}
-                      <ChevronRight size={14} aria-hidden />
-                    </span>
-                  )}
                 </>
               );
               return a.batch ? (
