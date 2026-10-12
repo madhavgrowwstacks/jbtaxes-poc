@@ -6,6 +6,33 @@ import { cx } from "../../lib/utils";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+// The app scrolls inside <main id="content">, not the window, so that's what gets locked
+// while a dialog is open. Counted so nested dialogs don't unlock too early.
+let lockCount = 0;
+let saved = null;
+
+function lockBackground() {
+  if (lockCount++ > 0) return;
+  const content = document.getElementById("content");
+  const targets = [document.body, content].filter(Boolean);
+  saved = targets.map((el) => ({ el, overflow: el.style.overflow, paddingRight: el.style.paddingRight }));
+  for (const el of targets) {
+    // Keep the scrollbar's space so the page doesn't shift sideways.
+    const scrollbar = el === document.body ? window.innerWidth - document.documentElement.clientWidth : el.offsetWidth - el.clientWidth;
+    if (scrollbar > 0) el.style.paddingRight = `${scrollbar}px`;
+    el.style.overflow = "hidden";
+  }
+}
+
+function unlockBackground() {
+  if (--lockCount > 0) return;
+  for (const { el, overflow, paddingRight } of saved || []) {
+    el.style.overflow = overflow;
+    el.style.paddingRight = paddingRight;
+  }
+  saved = null;
+}
+
 export default function Modal({ open, onClose, title, description, children, footer, size = "md" }) {
   const panelRef = useRef(null);
   const closeRef = useRef(onClose);
@@ -14,6 +41,7 @@ export default function Modal({ open, onClose, title, description, children, foo
   useEffect(() => {
     if (!open) return;
     const previouslyFocused = document.activeElement;
+    lockBackground();
 
     const onKey = (e) => {
       if (e.key === "Escape") closeRef.current();
@@ -39,7 +67,8 @@ export default function Modal({ open, onClose, title, description, children, foo
     return () => {
       document.removeEventListener("keydown", onKey);
       clearTimeout(t);
-      previouslyFocused?.focus?.();
+      unlockBackground();
+      previouslyFocused?.focus?.({ preventScroll: true });
     };
   }, [open]);
 
