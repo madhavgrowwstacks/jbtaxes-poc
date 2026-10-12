@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tasklist)",
+      "Bash(npx next *)",
+      "Bash(curl -s -o /dev/null http://localhost:3001/)",
+      "Bash(break)",
+      "Bash(node run.js http://localhost:3001 ./shots)",
+      "Bash(python -)",
+      "Bash(node run.js http://localhost:3000 ./shots)"
+    ]
+  }
+}
